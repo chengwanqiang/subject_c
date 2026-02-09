@@ -1,22 +1,51 @@
-version: '3.8'
-
 services:
-  # ----------------------------
-  # [TODO] 候选人请在此处补充配置
-  # ----------------------------
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: kanban
+      MYSQL_USER: kanban
+      MYSQL_PASSWORD: kanbanpass
+      MYSQL_ROOT_PASSWORD: rootpass
+    command: >
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-prootpass"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
 
-  # 示例结构 (请取消注释并修改):
+  backend:
+    build: ./backend
+    environment:
+      APP_ENV: production
+      DB_HOST: db
+      DB_PORT: "3306"
+      DB_NAME: kanban
+      DB_USER: kanban
+      DB_PASSWORD: kanbanpass
+      # 也支持直接用 DATABASE_URL（优先级更高）
+      DATABASE_URL: mysql+pymysql://kanban:kanbanpass@db:3306/kanban?charset=utf8mb4
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
 
-  # frontend:
-  #   build: ./frontend
-  #   ports:
-  #     - "3000:3000"
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_BASE: /api
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    restart: unless-stopped
 
-  # backend:
-  #   build: ./backend
-  #   ports:
-  #     - "8000:8000"
-
-  # db:
-  #   image: postgres:15 (or mysql/redis)
-  #   ...
+volumes:
+  db_data:

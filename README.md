@@ -1,5 +1,44 @@
 # 🚀 Prompt2Repo 准入考核 (Entrance Challenge)
 
+## ✅ 题目 C 实现：全栈看板任务管理（Kanban Board）
+
+本仓库已按题目 C 要求完成：
+- **前端**：Vue 3 + Vite + Tailwind（商业级基础 UI），支持 Todo/Doing/Done 三列看板、拖拽排序/跨列移动、任务增删改
+- **后端**：Python（FastAPI）提供 REST API，启动时自动建表
+- **数据库**：MySQL 8（utf8mb4）
+- **交付**：根目录 `docker-compose.yml`，`docker compose up` 一键联调
+
+### 一键启动
+
+在仓库根目录执行：
+
+```bash
+docker compose up -d --build
+```
+
+启动后访问：
+- **前端**：`http://localhost:3000`
+- **后端健康检查**：`http://localhost:8000/api/health`
+
+停止并清理（会删除数据库数据）：
+
+```bash
+docker compose down -v
+```
+
+### 核心功能验收点（建议录屏演示顺序）
+- **创建任务**：在 Todo/Doing/Done 任意列创建任务
+- **编辑/删除任务**：卡片右上角按钮（也支持双击卡片编辑）
+- **拖拽同步**：拖拽卡片排序/跨列移动，刷新页面后顺序与状态保持不变（已持久化到 MySQL）
+
+### API 简表
+- `GET /api/health`
+- `GET /api/tasks`
+- `POST /api/tasks`
+- `PATCH /api/tasks/{id}`
+- `DELETE /api/tasks/{id}`
+- `POST /api/tasks/reorder`（拖拽排序/跨列移动持久化）
+
 ## 📌 考核背景
 本项目寻找具备 **"AI Native" (Vibe Coding)** 能力的资深工程师。我们需要你展示如何利用 **Cursor / Trae / Claude Code** 等 AI 工具，快速构建**工程化标准**的应用。
 
